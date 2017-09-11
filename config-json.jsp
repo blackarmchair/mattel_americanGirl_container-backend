@@ -14,6 +14,14 @@
 <%@ page import="java.text.Normalizer" %>
 <%@ page import="java.net.URLDecoder" %>
 
+<sql:transaction dataSource="srvbase">
+  <sql:query var="query">
+    SELECT `account_id` FROM `nep`.`ccms_accounts` WHERE `account_name` = ?;
+    <sql:param value="AmericanGirl"></sql:param>
+  </sql:query>
+  <c:set var="accountId" value="${query.rows[0].account_id}"></c:set>
+</sql:transaction>
+
 <% // DISABLE CACHING SO THE CAROUSEL SORT ORDER UPDATES !!!
 response.setHeader( "Pragma", "no-cache" );
 response.setHeader( "Cache-Control", "no-cache" );
@@ -24,17 +32,18 @@ response.addHeader("Cache-Control", "max-age=0");
 %>
 
 <%
+int accountId = Integer.valueOf(""+pageContext.getAttribute("accountId"));
 ContentMap cMap = new ContentMap();
 cMap.setSortColumn("sort_first");
 
-HashMap map   = cMap.fetchTemplate(76, "Tiles");
+HashMap map   = cMap.fetchTemplate(accountId, "Tiles");
 ArrayList arr = (ArrayList)map.get("tileset");
 int ind       = 0;
 
 for (int i = 0; i < arr.size(); i++) {
   String date_publish = ((HashMap)arr.get(i)).get("date_publish").toString();
 	try {
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");;
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     Date date     = (Date)df.parse(date_publish);
     Date today    = new Date();
 
@@ -52,13 +61,13 @@ if (json.has("tiles")) {
 	tiles = jarr.toString(2).trim();
 }
 
-map = cMap.fetchTemplate(76, "Hamburger Menu");
+map = cMap.fetchTemplate(accountId, "Hamburger Menu");
 arr = (ArrayList)map.get("hamburgers");
 
 for (int i=0; i < arr.size(); i++) {
 	String date_publish = ((HashMap)arr.get(i)).get("date_publish").toString();
 	try {
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");;
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     Date date     = (Date)df.parse(date_publish);
  	  Date today    = new Date();
     if (!today.before(date)) { ind = i; break; }
@@ -72,7 +81,27 @@ if (json.has("hamburger")) {
 	hamburger = jarr.toString(2).trim();
 }
 
-String jsonres = "{ \"tiles\": " + tiles + ", \"hamburger\": " + hamburger + " }";
+map = cMap.fetchTemplate(accountId, "Carousel");
+arr = (ArrayList)map.get("carousels");
+
+for (int i=0; i < arr.size(); i++) {
+	String date_publish = ((HashMap)arr.get(i)).get("date_publish").toString();
+	try {
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    Date date     = (Date)df.parse(date_publish);
+ 	  Date today    = new Date();
+    if (!today.before(date)) { ind = i; break; }
+  }
+  catch (Exception e) {}
+}
+json             = new JSONObject((HashMap)arr.get(ind));
+String carousel = "[]";
+if (json.has("carousel")) {
+	jarr = json.getJSONArray("carousel");
+	carousel = jarr.toString(2).trim();
+}
+
+String jsonres = "{ \"tiles\": " + tiles + ", \"hamburger\": " + hamburger + ", \"carousel\": " + carousel + " }";
 response.getWriter().write(jsonres);
 
 %>
