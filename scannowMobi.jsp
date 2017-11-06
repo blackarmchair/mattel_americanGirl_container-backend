@@ -10,8 +10,8 @@
   <c:set var="imageSize" value="324"></c:set>
   <c:set var="facebookID" value="125521068098920"></c:set>
   <c:set var="facebookText" value="Check out the AG Central app - scannow.mobi/${appUrl}"></c:set>
-  <c:set var="playStoreLink" value="https://play.google.com/store/apps/"></c:set>
-  <c:set var="appStoreLink" value="https://itunes.apple.com/us/"></c:set>
+  <c:set var="playStoreLink" value="https://play.google.com/store/apps/details?id=air.com.yudu.ReaderAIR3104835&hl=en"></c:set>
+  <c:set var="appStoreLink" value="https://itunes.apple.com/us/app/american-girl-catalogue/id482067432?mt=8"></c:set>
   <c:set var="textColor" value="#000000"></c:set>
   <c:set var="bgColor" value="#fbfbfb"></c:set>
 
